@@ -2,7 +2,7 @@
 
 This project aims to predict airline no-show rates to optimize ticket sales and overbooking strategies using SAS Viya Workbench for Learners.
 
-## 🌟 Features
+## Features
 
 ### Web Application
 - **Modern UI/UX**: Beautiful, responsive design with gradient backgrounds and smooth animations
@@ -13,14 +13,14 @@ This project aims to predict airline no-show rates to optimize ticket sales and 
 - **Demo Mode**: Works even without trained models using intelligent fallback predictions
 
 ### Key Improvements
-- ✅ Enhanced form validation and user feedback
-- ✅ Loading states and error handling
-- ✅ Risk level indicators (Low/Medium/High)
-- ✅ Auto-calculation of lead times
-- ✅ Smooth animations and transitions
-- ✅ Professional navigation and footer
-- ✅ Data visualization with Chart.js
-- ✅ System health monitoring
+- Enhanced form validation and user feedback
+- Loading states and error handling
+- Risk level indicators (Low/Medium/High)
+- Auto-calculation of lead times
+- Smooth animations and transitions
+- Professional navigation and footer
+- Data visualization with Chart.js
+- System health monitoring
 
 Project Structure
 
