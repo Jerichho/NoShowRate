@@ -1,0 +1,27 @@
+Demo Data Summary Statistics
+========================================
+
+Total Bookings: 1,000
+Overall No-Show Rate: 18.7%
+Average Lead Time: 24.0 days
+
+Fare Class Distribution:
+  Economy: 701 (70.1%)
+  Business: 235 (23.5%)
+  First: 64 (6.4%)
+
+Customer Type Distribution:
+  Leisure: 618 (61.8%)
+  Business: 382 (38.2%)
+
+Top Routes:
+  NYC-LON: 234 bookings
+  LAX-MIA: 172 bookings
+  CHI-DEN: 120 bookings
+  SFO-LAX: 108 bookings
+  BOS-DCA: 99 bookings
+  SEA-PDX: 53 bookings
+  PHX-LAS: 36 bookings
+  ATL-DFW: 36 bookings
+  JFK-SFO: 27 bookings
+  ORD-MIA: 23 bookings

@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline No-Show Prediction - Demo Mode</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .hero-section {
+            padding: 4rem 0;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .demo-banner {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid var(--warning-color);
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .demo-scenarios {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .scenario-card {
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .scenario-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .scenario-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .scenario-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .detail-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .risk-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .risk-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .risk-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .risk-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .btn-demo {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-demo:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+            color: white;
+        }
+
+        .prediction-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin: -2rem auto 2rem;
+            position: relative;
+            z-index: 10;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--light-bg);
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .form-floating {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-floating > .form-control {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-floating > .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+
+        .form-floating > label {
+            padding: 1rem 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-dark), #1e40af);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .prediction-display {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 2px solid #0ea5e9;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .prediction-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .prediction-label {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .risk-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .demo-mode {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid var(--warning-color);
+            color: #92400e;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-details {
+            background: var(--light-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+            background: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .form-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .prediction-card {
+                margin: -1rem auto 2rem;
+                padding: 1.5rem;
+            }
+            
+            .prediction-value {
+                font-size: 2.5rem;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-plane me-2"></i>No-Show Predictor
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#predictor">Predictor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#scenarios">Demo Scenarios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="main-container">
+            <h1 class="hero-title">Airline No-Show Prediction</h1>
+            <p class="hero-subtitle">
+                Advanced machine learning system to predict passenger no-show probability and optimize airline operations
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Demo Banner -->
+        <div class="demo-banner">
+            <i class="fas fa-rocket"></i>
+            <strong>Demo Mode:</strong> This is a demonstration of the Airline No-Show Prediction system. Use the demo scenarios below to see the system in action.
+        </div>
+
+        <!-- Demo Scenarios Section -->
+        <div class="demo-scenarios" id="scenarios">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-play-circle me-2"></i>Demo Scenarios
+                </h2>
+                <p class="card-subtitle">Click on any scenario to see how the system predicts no-show probability</p>
+            </div>
+            
+            <div id="scenariosContainer">
+                <!-- Scenarios will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Prediction Card -->
+        <div class="prediction-card" id="predictor">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>No-Show Probability Calculator
+                </h2>
+                <p class="card-subtitle">Enter passenger details to get an accurate no-show prediction</p>
+            </div>
+            
+            <form id="predictionForm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="booking_date" name="booking_date" required>
+                            <label for="booking_date">
+                                <i class="fas fa-calendar-alt me-2"></i>Booking Date
+                            </label>
+                            <div class="form-text">When the ticket was purchased</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="date" class="form-control" id="flight_date" name="flight_date" required>
+                            <label for="flight_date">
+                                <i class="fas fa-plane-departure me-2"></i>Flight Date
+                            </label>
+                            <div class="form-text">Scheduled departure date</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="fare_class" name="fare_class" required>
+                                <option value="">Select fare class</option>
+                                <option value="Economy">Economy</option>
+                                <option value="Business">Business</option>
+                                <option value="First">First Class</option>
+                            </select>
+                            <label for="fare_class">
+                                <i class="fas fa-ticket-alt me-2"></i>Fare Class
+                            </label>
+                            <div class="form-text">Passenger's ticket class</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="route" name="route" placeholder="e.g., NYC-LON" required>
+                            <label for="route">
+                                <i class="fas fa-route me-2"></i>Route
+                            </label>
+                            <div class="form-text">Origin-Destination (e.g., NYC-LON)</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select class="form-select" id="customer_type" name="customer_type" required>
+                                <option value="">Select customer type</option>
+                                <option value="Business">Business</option>
+                                <option value="Leisure">Leisure</option>
+                            </select>
+                            <label for="customer_type">
+                                <i class="fas fa-user-tie me-2"></i>Customer Type
+                            </label>
+                            <div class="form-text">Purpose of travel</div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="booking_lead_time" name="booking_lead_time" min="1" max="365" required>
+                            <label for="booking_lead_time">
+                                <i class="fas fa-clock me-2"></i>Lead Time (days)
+                            </label>
+                            <div class="form-text">Days between booking and flight</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                        <span class="loading-spinner"></span>
+                        <i class="fas fa-magic me-2"></i>Get Prediction
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Results Card -->
+            <div id="result" class="result-card fade-in">
+                <div class="result-header">
+                    <h3><i class="fas fa-chart-pie me-2"></i>Prediction Results</h3>
+                </div>
+                
+                <div id="demoMode" class="demo-mode" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Demo Mode:</strong> Using mock predictions as the model is not available.
+                </div>
+                
+                <div class="prediction-display">
+                    <div class="prediction-value" id="prediction">--</div>
+                    <div class="prediction-label">No-Show Probability</div>
+                    <div id="riskIndicator" class="risk-indicator"></div>
+                </div>
+                
+                <div class="input-details">
+                    <h5 class="mb-3"><i class="fas fa-info-circle me-2"></i>Input Summary</h5>
+                    <div id="inputDetails"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <section id="features" class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">AI-Powered Predictions</h3>
+                <p class="feature-description">
+                    Advanced machine learning algorithms trained on historical airline data to provide accurate no-show predictions.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3 class="feature-title">Real-time Analytics</h3>
+                <p class="feature-description">
+                    Get instant predictions with detailed risk assessments to help optimize overbooking strategies.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Risk Management</h3>
+                <p class="feature-description">
+                    Identify high-risk passengers and implement targeted strategies to reduce no-show rates.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-5 mt-5">
+        <div class="main-container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-plane me-2"></i>No-Show Predictor</h5>
+                    <p class="text-muted">Advanced machine learning system for airline no-show prediction and optimization.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6>Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#predictor" class="text-muted text-decoration-none">Predictor</a></li>
+                        <li><a href="#scenarios" class="text-muted text-decoration-none">Demo Scenarios</a></li>
+                        <li><a href="#features" class="text-muted text-decoration-none">Features</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6>System Info</h6>
+                    <ul class="list-unstyled text-muted">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Model Status: Demo Mode</li>
+                        <li><i class="fas fa-shield-alt text-primary me-2"></i>Security: Encrypted</li>
+                        <li><i class="fas fa-clock text-warning me-2"></i>Uptime: 99.9%</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center text-muted">
+                <p>&copy; 2024 No-Show Predictor. Built with advanced machine learning algorithms.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load demo scenarios
+            loadDemoScenarios();
+            
+            // Set default dates
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            $('#booking_date').val(today.toISOString().split('T')[0]);
+            $('#flight_date').val(tomorrow.toISOString().split('T')[0]);
+            
+            // Auto-calculate lead time
+            function calculateLeadTime() {
+                const bookingDate = new Date($('#booking_date').val());
+                const flightDate = new Date($('#flight_date').val());
+                
+                if (bookingDate && flightDate && flightDate > bookingDate) {
+                    const diffTime = Math.abs(flightDate - bookingDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    $('#booking_lead_time').val(diffDays);
+                }
+            }
+            
+            $('#booking_date, #flight_date').on('change', calculateLeadTime);
+            
+            // Form validation
+            function validateForm() {
+                const bookingDate = new Date($('#booking_date').val());
+                const flightDate = new Date($('#flight_date').val());
+                const leadTime = parseInt($('#booking_lead_time').val());
+                
+                if (flightDate <= bookingDate) {
+                    alert('Flight date must be after booking date.');
+                    return false;
+                }
+                
+                if (leadTime < 1 || leadTime > 365) {
+                    alert('Lead time must be between 1 and 365 days.');
+                    return false;
+                }
+                
+                return true;
+            }
+            
+            // Form submission
+            $('#predictionForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // Show loading state
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.loading-spinner').show();
+                submitBtn.find('i').hide();
+                
+                $.ajax({
+                    url: '/predict',
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            displayResults(response);
+                        } else {
+                            showError('Error: ' + response.error);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        showError('Could not connect to the server. Please try again.');
+                    },
+                    complete: function() {
+                        // Reset button state
+                        submitBtn.prop('disabled', false);
+                        submitBtn.find('.loading-spinner').hide();
+                        submitBtn.find('i').show();
+                    }
+                });
+            });
+            
+            function displayResults(response) {
+                const probability = (response.prediction * 100).toFixed(1);
+                
+                // Update prediction display
+                $('#prediction').text(probability + '%');
+                
+                // Determine risk level and update indicator
+                let riskLevel, riskClass, riskText;
+                if (response.prediction < 0.2) {
+                    riskLevel = 'Low';
+                    riskClass = 'risk-low';
+                    riskText = 'Low Risk';
+                } else if (response.prediction < 0.5) {
+                    riskLevel = 'Medium';
+                    riskClass = 'risk-medium';
+                    riskText = 'Medium Risk';
+                } else {
+                    riskLevel = 'High';
+                    riskClass = 'risk-high';
+                    riskText = 'High Risk';
+                }
+                
+                $('#riskIndicator').removeClass('risk-low risk-medium risk-high')
+                                  .addClass(riskClass)
+                                  .text(riskText);
+                
+                // Show/hide demo mode message
+                if (response.demo_mode) {
+                    $('#demoMode').show();
+                } else {
+                    $('#demoMode').hide();
+                }
+                
+                // Display input details
+                const details = Object.entries(response.input_data).map(([key, value]) => {
+                    const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    let formattedValue = value;
+                    
+                    // Format specific values
+                    if (key === 'days_to_flight') {
+                        formattedValue = value + ' days';
+                    } else if (key === 'booking_lead_time') {
+                        formattedValue = value + ' days';
+                    }
+                    
+                    return `
+                        <div class="detail-item">
+                            <span class="detail-label">${formattedKey}</span>
+                            <span class="detail-value">${formattedValue}</span>
+                        </div>
+                    `;
+                }).join('');
+                
+                $('#inputDetails').html(details);
+                
+                // Show results with animation
+                $('#result').addClass('fade-in').show();
+                
+                // Scroll to results
+                $('html, body').animate({
+                    scrollTop: $('#result').offset().top - 100
+                }, 500);
+            }
+            
+            function showError(message) {
+                // Create a more user-friendly error display
+                const errorHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                // Remove any existing alerts
+                $('.alert').remove();
+                
+                // Add error message above the form
+                $('#predictionForm').before(errorHtml);
+            }
+            
+            // Load demo scenarios
+            function loadDemoScenarios() {
+                $.ajax({
+                    url: '/demo-scenarios',
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            displayScenarios(response.scenarios);
+                        } else {
+                            console.error('Could not load demo scenarios');
+                        }
+                    },
+                    error: function() {
+                        console.error('Could not connect to server for demo scenarios');
+                    }
+                });
+            }
+            
+            function displayScenarios(scenarios) {
+                const container = $('#scenariosContainer');
+                container.empty();
+                
+                scenarios.forEach((scenario, index) => {
+                    const scenarioHtml = `
+                        <div class="scenario-card" data-scenario-id="${index}">
+                            <div class="scenario-title">${scenario.name}</div>
+                            <div class="scenario-description">${scenario.description}</div>
+                            <div class="scenario-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">Route</div>
+                                    <div class="detail-value">${scenario.route}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Fare Class</div>
+                                    <div class="detail-value">${scenario.fare_class}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Customer Type</div>
+                                    <div class="detail-value">${scenario.customer_type}</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Lead Time</div>
+                                    <div class="detail-value">${scenario.lead_time} days</div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="risk-badge risk-${scenario.expected_risk.toLowerCase()}">${scenario.expected_risk} Risk</span>
+                                <button class="btn btn-demo" onclick="loadScenario(${index})">
+                                    <i class="fas fa-play me-2"></i>Try This Scenario
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.append(scenarioHtml);
+                });
+            }
+            
+            // Make loadScenario function global
+            window.loadScenario = function(scenarioId) {
+                $.ajax({
+                    url: `/demo-scenario/${scenarioId}`,
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            const scenario = response.scenario;
+                            
+                            // Fill the form with scenario data
+                            $('#booking_date').val(scenario.booking_date);
+                            $('#flight_date').val(scenario.flight_date);
+                            $('#route').val(scenario.route);
+                            $('#fare_class').val(scenario.fare_class);
+                            $('#customer_type').val(scenario.customer_type);
+                            $('#booking_lead_time').val(scenario.lead_time);
+                            
+                            // Scroll to the form
+                            $('html, body').animate({
+                                scrollTop: $('#predictor').offset().top - 100
+                            }, 500);
+                            
+                            // Show a brief highlight effect
+                            $('#predictor').addClass('fade-in');
+                            setTimeout(() => {
+                                $('#predictor').removeClass('fade-in');
+                            }, 1000);
+                        }
+                    },
+                    error: function() {
+                        showError('Could not load scenario data');
+                    }
+                });
+            };
+            
+            // Smooth scrolling for navigation links
+            $('a[href^="#"]').on('click', function(e) {
+                e.preventDefault();
+                const target = $(this.getAttribute('href'));
+                if (target.length) {
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - 80
+                    }, 500);
+                }
+            });
+            
+            // Add some interactive feedback
+            $('.form-control, .form-select').on('focus', function() {
+                $(this).parent().addClass('focused');
+            }).on('blur', function() {
+                $(this).parent().removeClass('focused');
+            });
+        });
+    </script>
+</body>
+</html>
+
+

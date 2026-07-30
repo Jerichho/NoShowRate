@@ -1,0 +1,6 @@
+name,booking_date,flight_date,route,fare_class,customer_type,lead_time,expected_risk,description
+High-Value Business Traveler,2025-09-22,2025-09-24,NYC-LON,Business,Business,2,Low,Premium business traveler with short lead time
+Budget Leisure Traveler,2025-08-25,2025-10-22,LAX-MIA,Economy,Leisure,30,Medium,Leisure traveler with advance booking
+Last-Minute Leisure Booking,2025-09-23,2025-09-24,CHI-DEN,Economy,Leisure,1,High,Last-minute leisure booking with high no-show risk
+Premium First Class,2025-09-10,2025-10-06,JFK-SFO,First,Business,14,Low,First class business traveler
+Seasonal Leisure Travel,2025-07-26,2025-11-21,SFO-LAX,Economy,Leisure,60,Medium,Long-term leisure booking
