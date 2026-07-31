@@ -65,7 +65,7 @@ Workflow
    - Business insights
    - Recommendations
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Running the Web Application
 ```bash
@@ -84,7 +84,7 @@ The application will be available at `http://localhost:8080`
 - **Health Check** (`/health`): System status endpoint
 - **Stats** (`/stats`): System statistics
 
-## 🛠 Tech Stack 
+## Tech Stack 
 
 ### Backend
 - **Flask**: Web framework
